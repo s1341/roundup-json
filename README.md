@@ -1,7 +1,7 @@
 roundup-json
 ============
 
-JSON extensions for roundup tracker
+JSON extensions for [roundup tracker](http://www.roundup-tracker.org/).
 
 This is a simple extension for roundup which provides useful JSON actions to
 retrieve data from the server for the purposes of AJAX.
