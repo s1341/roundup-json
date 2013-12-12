@@ -51,7 +51,7 @@ Set this option to True if you want a flat array of values from a single column 
 
 ### get_json_for_datatables
 This is a version of get_json which is specifically geared towards handling
-AJAX load requests from the excellent http://http://datatables.net/ jQuery
+AJAX load requests from the excellent http://datatables.net/ jQuery
 plugin.
 
 It uses the 'native' datatables query parameters to generate a JSON result in the format
