@@ -1,0 +1,81 @@
+<tal:block metal:use-macro="templates/page/macros/frame">
+    <title metal:fill-slot="head_title" >
+        <span tal:omit-tag="true" >List of projects</span>
+        <span tal:condition="request/dispname" tal:replace="python:' - %s '%request.dispname"/> - <span tal:replace="config/TRACKER_NAME" />
+    </title>
+    <span metal:fill-slot="body_title" tal:omit-tag="true">
+        <span tal:omit-tag="true" >List of projects</span>
+        <span tal:condition="request/dispname" tal:replace="python:' - %s' % request.dispname" />
+    </span>
+    <tal:block metal:fill-slot="more-javascript">
+      <!-- datatables -->
+      <link rel="stylesheet" href="@@file/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css">
+      <script src="@@file/datatables/media/js/jquery.dataTables.js"></script>
+      <script src="@@file/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+      <link rel="stylesheet" href="@@file/datatables-tabletools/media/css/TableTools.css">
+      <script src="@@file/datatables-tabletools/media/js/ZeroClipboard.js"></script>
+      <script src="@@file/datatables-tabletools/media/js/TableTools.js"></script>
+      <!-- selectize -->
+      <link rel="stylesheet" href="@@file/selectize/dist/css/selectize.bootstrap3.css" type="text/css" />
+      <link rel="stylesheet" href="@@file/css/selectize.customized.css" type="text/css" />
+      <script src="@@file/selectize/dist/js/standalone/selectize.js " type="text/javascript" charset="utf-8"></script> 
+    </tal:block>
+
+    <tal:block metal:fill-slot="content">
+
+        <p tal:condition="python:not (context.is_view_ok() or request.user.hasRole('Anonymous'))">
+            You are not allowed to view this page.
+        </p>
+
+        <p tal:condition="python:not context.is_view_ok() and request.user.hasRole('Anonymous')">
+            Please login with your username and password.
+        </p>
+
+        <!--<tal:block tal:define="batch request/batch" tal:condition="context/is_view_ok">-->
+        <div class="container">
+            <div class="row">
+                <script>
+                    $(function () {
+                        var columns = [
+                                { "mData": "id", "sName": "id" },
+                                { 
+                                    "mData": "name", "sName": "name",
+                                    "mRender": function (data, type, full) {
+                                            return '<a href="project' + full.id + '">' + data + '</a>';
+                                            },
+                                },
+                                { "mData": "prefix", "sName": "prefix" },
+                                { "mData": "description", "sName": "description" },
+                                { "mData": "activity", "sName":"activity" },
+
+                            ];
+                    generate_datatable("#results-table", "project", columns);
+
+                    });
+                </script>
+                <table id="results-table" class="table table-hover">
+                </table>
+
+            <!-- Project -->
+            <div>
+                <label class="col-lg-2 control-label" for="project">Project</label>
+                <div class="col-lg-2">
+                    <select id="project" class="form-control" name="project" tal:attributes="disabled context/id; data-value python: context.version.device_type.project.id">
+                    </select>
+                    <script>
+                        $(function () {
+                            var s = attach_selectize("#project", options = {
+                                data_class: "project",
+                                value_field: "id",
+                                label_field: "name",
+                                on_load: function () {
+                                    this.setValue($("#project").data("value"));
+                                },
+                            });
+                          });
+                    </script>
+                  </div>
+            </div> <!-- row -->
+        </div> <!-- container -->
+    </tal:block>
+</tal:block>
