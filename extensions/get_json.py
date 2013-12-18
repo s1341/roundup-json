@@ -278,7 +278,7 @@ class GetJSONForDataTablesAction(GetJSONAction):
             pprint(self.columns)
 
             roundup_sortlist = []
-            roundup_filterspec = {}  # TODO: incorporate request filterspec
+            roundup_filterspec = self.request.filterspec
             for c in self.columns.values():
                 sortattr = c.get_sortattr()
                 filterspec = c.get_filterspec()
@@ -286,6 +286,7 @@ class GetJSONForDataTablesAction(GetJSONAction):
                     roundup_sortlist.append(sortattr)
                 if filterspec:
                     roundup_filterspec.update(filterspec)
+
 
             obj, num_items_selected, total_items = self._retrieve_data(itemclass, self.columns.values(), json_nested, searchtext, roundup_filterspec, roundup_sortlist, self.request.group)
 

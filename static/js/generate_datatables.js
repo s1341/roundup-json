@@ -25,6 +25,8 @@ function generate_datatable(tableselector, itemclass, columns, filterspec, optio
         on_load: null,
         no_ajax: false,
         data_array: null, // should always be set if no_ajax is
+        filterspec: filterspec,
+        filters: "",
     };
     options = $.extend({}, defaults, options);
 
@@ -32,6 +34,14 @@ function generate_datatable(tableselector, itemclass, columns, filterspec, optio
     var thead = table.append("<thead><tr></tr></thead>").find("thead:first tr");
     var tfoot = table.append("<tfoot><tr></tr></tfoot>").find("tfoot:first tr");
 
+    if (options.filterspec) {
+        options.filters = "&@filter=" + Object.keys(options.filterspec);
+        for (var f in options.filterspec) {
+            if (options.filterspec[f]) {
+                options.filters += '&' + f + '=' + options.filterspec[f];
+            }
+        }
+    }
     if(typeof columns === "string") {
         //TODO: This is a truly horrible idea! eval-ing the columns might lead to all
         //kinds of potential security issues. Consider finding a less horrific way to
@@ -68,7 +78,6 @@ function generate_datatable(tableselector, itemclass, columns, filterspec, optio
             "@action": "get_json_for_datatables",
             "json_nested": "yes",
             "@columns": column_list,
-            "@filterspec": filterspec ? filterspec : "",
         };
         table.dataTable( {
             sDom: sDom,
@@ -78,10 +87,10 @@ function generate_datatable(tableselector, itemclass, columns, filterspec, optio
             bServerSide: true,
             bProcessing: true,
             aoColumns: columns,
-            sAjaxSource: build_query(itemclass, query_args),
+            sAjaxSource: build_query(itemclass, query_args) + options.filters,
             fnInitComplete: options.on_load ? function (oSettings, json) { options.on_load(); } : null,
             iDisplayLength: 50,
-            bDestroy: true, //if there was an existing table, destroy it
+//            bDestroy: true, //if there was an existing table, destroy it
             bDestroy: options.destroy, //FIXME: Why is this duplicated?
         });
     } else {
@@ -95,7 +104,7 @@ function generate_datatable(tableselector, itemclass, columns, filterspec, optio
             fnInitComplete: options.on_load ? function (oSettings, json) { options.on_load(); } : null,
             iDisplayLength: 50,
             //bDestroy: true, //if there was an existing table, destroy it
-            //bDestroy: options.destroy,
+            bDestroy: options.destroy,
         });
     }
 
