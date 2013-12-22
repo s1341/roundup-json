@@ -171,24 +171,12 @@ class GetJSONAction(Action):
             tree = tree[component]
         return tree
 
-    def _get_project_for_row(self, klass, itemid):
-        if klass.classname in ["finding", "antifinding"]:
-            path = "version.device_type.project"
-        elif klass.classname == "version":
-            path = "device_type.project"
-        elif klass.classname == "device_type":
-            path = "project"
-        else:
-            return None
-        return _walkprop(self.db, klass.getnode(itemid), path)
-
     def _build_json_nested(self, klass, columns, itemidlist):
         res = []
 
         for itemid in itemidlist:
             row = {}
             for col in columns:
-                pprint(col)
                 # deal with transverse
                 col_name = col.get_name()
                 if "." in col_name:
@@ -196,9 +184,6 @@ class GetJSONAction(Action):
                     continue
 
                 item = klass.get(itemid, col_name)
-                if col_name == "proj_id" and item:
-                    project = self._get_project_for_row(klass, itemid)
-                    item = "%s%03d" % (project["prefix"], int(item))
                 row[col_name] = item
                 # special case date:
                 if item and isinstance(item, roundup.date.Date):
@@ -275,7 +260,6 @@ class GetJSONForDataTablesAction(GetJSONAction):
             searchtext = self._safe_request_lookup("sSearch", self.request.search_text)
 
             self._parse_client_columns()
-            pprint(self.columns)
 
             roundup_sortlist = []
             roundup_filterspec = self.request.filterspec
