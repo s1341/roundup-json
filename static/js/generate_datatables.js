@@ -12,7 +12,7 @@ function build_query (base, args) {
 //------------------------------------------------------------------------------
 // datatables
 //------------------------------------------------------------------------------
-function generate_datatable(tableselector, itemclass, columns, filterspec, options) {
+function generate_datatable(tableselector, itemclass, columns, filterspec, order, options) {
     var column_list = "";
     var table = $(tableselector);
     var defaults = {
@@ -42,6 +42,7 @@ function generate_datatable(tableselector, itemclass, columns, filterspec, optio
             }
         }
     }
+
     if(typeof columns === "string") {
         //TODO: This is a truly horrible idea! eval-ing the columns might lead to all
         //kinds of potential security issues. Consider finding a less horrific way to
@@ -87,6 +88,7 @@ function generate_datatable(tableselector, itemclass, columns, filterspec, optio
             bServerSide: true,
             bProcessing: true,
             aoColumns: columns,
+            order: order,
             sAjaxSource: build_query(itemclass, query_args) + options.filters,
             fnInitComplete: options.on_load ? function (oSettings, json) { options.on_load(); } : null,
             iDisplayLength: 50,
